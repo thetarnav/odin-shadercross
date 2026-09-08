@@ -75,16 +75,14 @@ jobs:
       - name: Run example (Linux)
         if: runner.os == 'Linux'
         run: |
-          LD_LIBRARY_PATH=$GITHUB_WORKSPACE/lib:$SDL3_ROOT/lib:$LD_LIBRARY_PATH \
-          odin run example
+          odin run example -extra-linker-flags:"-Wl,-rpath,$GITHUB_WORKSPACE/lib:$SDL3_ROOT/lib"
 
       - name: Run example (macOS)
         if: runner.os == 'macOS'
         run: |
-          LIBRARY_PATH=$GITHUB_WORKSPACE/lib:$SDL3_ROOT/lib:$LIBRARY_PATH \
-          odin run example -extra-linker-flags:"-rpath $GITHUB_WORKSPACE/lib"
+          odin run example -extra-linker-flags:"-rpath $GITHUB_WORKSPACE/lib:$SDL3_ROOT/lib"
 
       - name: Run example (Windows)
         if: runner.os == 'Windows'
         run: |
-          odin run example
+          odin run example -out:lib/example.exe
