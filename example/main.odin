@@ -4,15 +4,13 @@ import "core:fmt"
 import sdl "vendor:sdl3"
 import shadercross ".."
 
-device:  ^sdl.GPUDevice
 prop_id: sdl.PropertiesID
 
 main :: proc () {
 	if !init() do return
 	defer quit()
 
-	vert_shader := graphics_shader_compile("./vert.hlsl", .VERTEX)
-	assert(vert_shader != nil)
+	graphics_shader_compile("./vert.hlsl", .VERTEX)
 
 	fmt.println("Done")
 }
@@ -21,9 +19,6 @@ init :: proc () -> (ok: bool) {
 
 	ok = sdl.Init({.VIDEO})
 	fmt.assertf(ok, "unable to initialize sdl, error: %s", sdl.GetError())
-
-	device = sdl.CreateGPUDevice({.SPIRV, .DXIL, .MSL}, true, nil)
-	fmt.assertf(device != nil, "unable to create gpu device, error: %s", sdl.GetError())
 
 	ok = shadercross.Init()
 	fmt.assertf(ok, "unable to initialize shadercross, error: %s", sdl.GetError())
@@ -34,15 +29,12 @@ init :: proc () -> (ok: bool) {
 }
 
 quit :: proc () {
-	if device != nil {
-		sdl.DestroyGPUDevice(device)
-	}
 	sdl.DestroyProperties(prop_id)
 	shadercross.Quit()
 	sdl.Quit()
 }
 
-graphics_shader_compile :: proc ($FILEPATH: string, stage: shadercross.ShaderStage) -> (shader: ^sdl.GPUShader) {
+graphics_shader_compile :: proc ($FILEPATH: string, stage: shadercross.ShaderStage) {
 
 	SHADER     :: #load(FILEPATH, cstring)
 	DEBUG_NAME :: cstring(FILEPATH)
@@ -59,13 +51,6 @@ graphics_shader_compile :: proc ($FILEPATH: string, stage: shadercross.ShaderSta
 	fmt.println("SPIRV", string(spirv[:size]))
 
 	reflect := shadercross.ReflectGraphicsSPIRV(spirv, size, prop_id)
-	shader = shadercross.CompileGraphicsShaderFromSPIRV(
-		device,
-		{spirv, size, "main", stage, prop_id},
-		reflect.resource_info,
-		prop_id,
-	)
-	fmt.assertf(shader != nil, "unable to compile shader from SPIRV, error: %s", sdl.GetError())
 
-	return shader
+	fmt.println("reflect", reflect)
 }
