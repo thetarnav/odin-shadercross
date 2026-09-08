@@ -24,18 +24,22 @@ package sdl_shadercross
 import "core:c"
 import sdl "vendor:sdl3"
 
-SDL_SHADERCROSS_SYSTEM :: #config(SDL_SHADERCROSS_SYSTEM, false)
+USE_SYSTEM :: #config(SDL_SHADERCROSS_SYSTEM, false)
 
-when SDL_SHADERCROSS_SYSTEM {
-	when ODIN_OS == .Windows {SDL_SHADERCROSS_LIB_PATH :: "system:SDL3_shadercross.lib"}
-	else                     {SDL_SHADERCROSS_LIB_PATH :: "system:SDL3_shadercross"}
+when USE_SYSTEM {
+	when ODIN_OS == .Windows {LIB_PATH :: "system:SDL3_shadercross.lib"}
+	else                     {LIB_PATH :: "system:SDL3_shadercross"}
 } else {
-	when      ODIN_OS == .Windows {SDL_SHADERCROSS_LIB_PATH :: "lib/SDL3_shadercross.lib"}
-	else when ODIN_OS == .Darwin  {SDL_SHADERCROSS_LIB_PATH :: "lib/libSDL3_shadercross.dylib"}
-	else                          {SDL_SHADERCROSS_LIB_PATH :: "lib/libSDL3_shadercross.so"}
+	when      ODIN_OS == .Windows {LIB_PATH :: "lib/SDL3_shadercross.lib"}
+	else when ODIN_OS == .Darwin  {LIB_PATH :: "lib/libSDL3_shadercross.dylib"}
+	else                          {LIB_PATH :: "lib/libSDL3_shadercross.so"}
 }
 
-@(export) foreign import lib {SDL_SHADERCROSS_LIB_PATH}
+when !#exists(LIB_PATH) {
+	#panic("Could not find the compiled SDL_shadercross libraries at \"" + LIB_PATH + "\", they can be compiled by running `" + #directory + ("build.bat`" when ODIN_OS == .Windows else "bulid.sh`"))
+}
+
+@(export) foreign import lib {LIB_PATH}
 
 MAJOR_VERSION :: 3
 MINOR_VERSION :: 0
