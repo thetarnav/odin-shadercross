@@ -40,6 +40,10 @@ jobs:
           install-linux-dependencies: true
           add-to-environment: true
 
+      - name: Configure SDL linker path (Unix)
+        if: runner.os != 'Windows'
+        run: echo "LIBRARY_PATH=$SDL3_ROOT/lib" >> "$GITHUB_ENV"
+
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         run: |
