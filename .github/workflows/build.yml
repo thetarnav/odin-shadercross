@@ -73,4 +73,4 @@ jobs:
         run: ./build.sh
 
       - name: Check
-        run: odin check .
+        run: odin check . -no-entry-point
