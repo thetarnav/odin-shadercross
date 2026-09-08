@@ -72,11 +72,19 @@ jobs:
         if: runner.os != 'Windows'
         run: ./build.sh
 
-      - name: Configure Library Paths (Unix)
-        if: runner.os != 'Windows'
+      - name: Run example (Linux)
+        if: runner.os == 'Linux'
         run: |
-          echo "LIBRARY_PATH=$GITHUB_WORKSPACE/lib:$SDL3_ROOT/lib:$LIBRARY_PATH" >> "$GITHUB_ENV"
-          echo "LD_LIBRARY_PATH=$GITHUB_WORKSPACE/lib:$SDL3_ROOT/lib:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
+          LD_LIBRARY_PATH=$GITHUB_WORKSPACE/lib:$SDL3_ROOT/lib:$LD_LIBRARY_PATH \
+          odin run example
 
-      - name: Run example
-        run: odin run example
+      - name: Run example (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          LIBRARY_PATH=$GITHUB_WORKSPACE/lib:$SDL3_ROOT/lib:$LIBRARY_PATH \
+          odin run example -extra-linker-flags:"-rpath $GITHUB_WORKSPACE/lib"
+
+      - name: Run example (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          odin run example
