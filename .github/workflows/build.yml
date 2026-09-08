@@ -1,0 +1,67 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Build (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            os: ubuntu-latest
+          - name: Windows
+            os: windows-latest
+          - name: macOS
+            os: macos-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Set up Odin and LLVM
+        uses: laytan/setup-odin@v2
+        with:
+          token: ${{ github.token }}
+          release: latest
+
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes \
+            libfreetype-dev \
+            libdecor-0-dev \
+            libwayland-dev \
+            libx11-dev \
+            libxcursor-dev \
+            libxext-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxrandr-dev \
+            libxss-dev \
+            libxtst-dev
+
+      - name: Cache native libraries
+        uses: actions/cache@v6
+        with:
+          path: SDL_shadercross
+          key:  sdl-shadercross-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('build.env') }}
+
+      - name: Build SDL_shadercross (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: call build.bat
+
+      - name: Build SDL_shadercross (Unix)
+        if: runner.os != 'Windows'
+        run: ./build.sh
+
+      - name: Check
+        run: odin check .
