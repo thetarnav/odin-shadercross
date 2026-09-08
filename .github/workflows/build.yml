@@ -40,10 +40,6 @@ jobs:
           install-linux-dependencies: true
           add-to-environment: true
 
-      - name: Configure SDL linker path (Unix)
-        if: runner.os != 'Windows'
-        run: echo "LIBRARY_PATH=$SDL3_ROOT/lib" >> "$GITHUB_ENV"
-
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         run: |
@@ -75,6 +71,12 @@ jobs:
       - name: Build SDL_shadercross (Unix)
         if: runner.os != 'Windows'
         run: ./build.sh
+
+      - name: Configure Library Paths (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          echo "LIBRARY_PATH=$GITHUB_WORKSPACE/lib:$SDL3_ROOT/lib:$LIBRARY_PATH" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=$GITHUB_WORKSPACE/lib:$SDL3_ROOT/lib:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
 
       - name: Run example
         run: odin run example
