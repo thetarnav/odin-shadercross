@@ -61,7 +61,7 @@ if exist "%INSTALL_PREFIX%\bin\SDL3_shadercross.dll" set "LIBRARY_PRESENT=1"
 
 if defined LIBRARY_PRESENT (
 	echo WARNING: SDL_shadercross is already installed at:
-	echo          %INSTALL_PREFIX%
+	echo          %INSTALL_PREFIX%\lib
 	echo Skipping clone and build.
 	echo Remove the installed library if this was unintentional.
 	exit /b 0

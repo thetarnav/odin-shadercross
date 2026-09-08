@@ -60,7 +60,7 @@ CLONE_DIR="$(resolve_path "$SHADERCROSS_CLONE_DIR")"
 BUILD_DIR="$(resolve_path "$SHADERCROSS_BUILD_DIR")"
 
 library_present() {
-	find "$INSTALL_PREFIX" -type f \
+	find "$INSTALL_PREFIX/lib" -type f \
 		\( \
 			-name 'libSDL3_shadercross.so' \
 			-o -name 'libSDL3_shadercross.so.*' \
@@ -73,7 +73,7 @@ library_present() {
 
 if library_present; then
 	echo "WARNING: SDL_shadercross is already installed at:"
-	echo "         $INSTALL_PREFIX"
+	echo "         $INSTALL_PREFIX/lib"
 	echo "Skipping clone and build."
 	echo "Remove the installed library if this was unintentional."
 	exit 0
