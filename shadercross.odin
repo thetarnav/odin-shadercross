@@ -45,8 +45,12 @@ MAJOR_VERSION :: 3
 MINOR_VERSION :: 0
 MICRO_VERSION :: 0
 
-PROP_SPIRV_PSSL_COMPATIBILITY :: "SDL.shadercross.spirv.pssl.compatibility"
-PROP_SPIRV_MSL_VERSION        :: "SDL.shadercross.spirv.msl.version"
+PROP_SHADER_DEBUG_ENABLE_BOOLEAN         :: "SDL_shadercross.spirv.debug.enable"
+PROP_SHADER_DEBUG_NAME_STRING            :: "SDL_shadercross.spirv.debug.name"
+PROP_SHADER_CULL_UNUSED_BINDINGS_BOOLEAN :: "SDL_shadercross.spirv.cull_unused_bindings"
+
+PROP_SPIRV_PSSL_COMPATIBILITY_BOOLEAN    :: "SDL_shadercross.spirv.pssl.compatibility"
+PROP_SPIRV_MSL_VERSION_STRING            :: "SDL_shadercross.spirv.msl.version"
 
 IOVarType :: enum c.int {
     UNKNOWN,
@@ -70,59 +74,59 @@ ShaderStage :: enum c.int {
 }
 
 IOVarMetadata :: struct {
-    name:        cstring,    // < The UTF-8 name of the variable.
-    location:    sdl.Uint32, // < The location of the variable.
-    vector_type: IOVarType,  // < The vector type of the variable.
-    vector_size: sdl.Uint32, // < The number of components in the vector type of the variable.
+    name:        cstring,   // The UTF-8 name of the variable.
+    location:    u32,       // The location of the variable.
+    vector_type: IOVarType, // The vector type of the variable.
+    vector_size: u32,       // The number of components in the vector type of the variable.
+}
+
+GraphicsShaderResourceInfo :: struct {
+	num_samplers:         u32, // The number of samplers defined in the shader.
+	num_storage_textures: u32, // The number of storage textures defined in the shader.
+	num_storage_buffers:  u32, // The number of storage buffers defined in the shader.
+	num_uniform_buffers:  u32, // The number of uniform buffers defined in the shader.
 }
 
 GraphicsShaderMetadata :: struct {
-    num_samplers:         sdl.Uint32,       // < The number of samplers defined in the shader.
-    num_storage_textures: sdl.Uint32,       // < The number of storage textures defined in the shader.
-    num_storage_buffers:  sdl.Uint32,       // < The number of storage buffers defined in the shader.
-    num_uniform_buffers:  sdl.Uint32,       // < The number of uniform buffers defined in the shader.
-    num_inputs:           sdl.Uint32,       // < The number of inputs defined in the shader.
-    inputs:               [^]IOVarMetadata, // < The inputs defined in the shader.
-    num_outputs:          sdl.Uint32,       // < The number of outputs defined in the shader.
-    outputs:              [^]IOVarMetadata, // < The outputs defined in the shader.
+	using resource_info: GraphicsShaderResourceInfo, // Sub-struct containing the resource info of the shader.
+    num_inputs:          u32,                        // The number of inputs defined in the shader.
+    inputs:              [^]IOVarMetadata,           // The inputs defined in the shader.
+    num_outputs:         u32,                        // The number of outputs defined in the shader.
+    outputs:             [^]IOVarMetadata,           // The outputs defined in the shader.
 }
 
 ComputePipelineMetadata :: struct {
-    num_samplers:                   sdl.Uint32,  // < The number of samplers defined in the shader.
-    num_readonly_storage_textures:  sdl.Uint32,  // < The number of readonly storage textures defined in the shader.
-    num_readonly_storage_buffers:   sdl.Uint32,  // < The number of readonly storage buffers defined in the shader.
-    num_readwrite_storage_textures: sdl.Uint32,  // < The number of read-write storage textures defined in the shader.
-    num_readwrite_storage_buffers:  sdl.Uint32,  // < The number of read-write storage buffers defined in the shader.
-    num_uniform_buffers:            sdl.Uint32,  // < The number of uniform buffers defined in the shader.
-    threadcount_x:                  sdl.Uint32,  // < The number of threads in the X dimension.
-    threadcount_y:                  sdl.Uint32,  // < The number of threads in the Y dimension.
-    threadcount_z:                  sdl.Uint32,  // < The number of threads in the Z dimension.
+    num_samplers:                   u32,  // The number of samplers defined in the shader.
+    num_readonly_storage_textures:  u32,  // The number of readonly storage textures defined in the shader.
+    num_readonly_storage_buffers:   u32,  // The number of readonly storage buffers defined in the shader.
+    num_readwrite_storage_textures: u32,  // The number of read-write storage textures defined in the shader.
+    num_readwrite_storage_buffers:  u32,  // The number of read-write storage buffers defined in the shader.
+    num_uniform_buffers:            u32,  // The number of uniform buffers defined in the shader.
+    threadcount_x:                  u32,  // The number of threads in the X dimension.
+    threadcount_y:                  u32,  // The number of threads in the Y dimension.
+    threadcount_z:                  u32,  // The number of threads in the Z dimension.
 }
 
 SPIRV_Info :: struct {
-    bytecode:      [^]byte,          // < The SPIRV bytecode.
-    bytecode_size: uint,             // < The length of the SPIRV bytecode.
-    entrypoint:    cstring,          // < The entry point function name for the shader in UTF-8.
-    shader_stage:  ShaderStage,      // < The shader stage to transpile the shader with.
-    enable_debug:  bool,             // < Allows debug info to be emitted when relevant. Can be useful for graphics debuggers like RenderDoc.
-    name:          Maybe(cstring),   // < A UTF-8 name to associate with the shader. Optional, can be NULL.
-    props:         sdl.PropertiesID, // < A properties ID for extensions. Should be 0 if no extensions are needed.
+    bytecode:      [^]byte,          // The SPIRV bytecode.
+    bytecode_size: uint,             // The length of the SPIRV bytecode.
+    entrypoint:    cstring,          // The entry point function name for the shader in UTF-8.
+    shader_stage:  ShaderStage,      // The shader stage to transpile the shader with.
+    props:         sdl.PropertiesID, // A properties ID for extensions. Should be 0 if no extensions are needed.
 }
 
 HLSL_Define :: struct {
-    name:         cstring,        // < The define name.
-    value:        Maybe(cstring), // < An optional value for the define. Can be NULL.
+    name:  cstring,        // The define name.
+    value: Maybe(cstring), // An optional value for the define. Can be NULL.
 }
 
 HLSL_Info :: struct {
-    source:       cstring,               // < The HLSL source code for the shader.
-    entrypoint:   cstring,               // < The entry point function name for the shader in UTF-8.
-    include_dir:  Maybe(cstring),        // < The include directory for shader code. Optional, can be NULL.
-    defines:      Maybe([^]HLSL_Define), // < An array of defines. Optional, can be NULL. If not NULL, must be terminated with a fully NULL define struct.
-    shader_stage: ShaderStage,           // < The shader stage to compile the shader with.
-    enable_debug: bool,                  // < Allows debug info to be emitted when relevant. Can be useful for graphics debuggers like RenderDoc.
-    name:         Maybe(cstring),        // < A UTF-8 name to associate with the shader. Optional, can be NULL.
-    props:        sdl.PropertiesID,      // < A properties ID for extensions. Should be 0 if no extensions are needed.
+    source:       cstring,               // The HLSL source code for the shader.
+    entrypoint:   cstring,               // The entry point function name for the shader in UTF-8.
+    include_dir:  Maybe(cstring),        // The include directory for shader code. Optional, can be NULL.
+    defines:      Maybe([^]HLSL_Define), // An array of defines. Optional, can be NULL. If not NULL, must be terminated with a fully NULL define struct.
+    shader_stage: ShaderStage,           // The shader stage to compile the shader with.
+    props:        sdl.PropertiesID,      // A properties ID for extensions. Should be 0 if no extensions are needed.
 }
 
 @(default_calling_convention="c", link_prefix="SDL_ShaderCross_")
@@ -158,6 +162,10 @@ foreign lib {
 
 	You must sdl.free the returned string once you are done with it.
 
+	These are the optional properties that can be used:
+
+	- `PROP_SPIRV_MSL_VERSION_STRING`: specifies the MSL version that should be emitted. Defaults to 1.2.0.
+
 	param: info a struct describing the shader to transpile.
 	returns: an sdl.malloc'd string containing MSL code.
 	*/
@@ -167,6 +175,10 @@ foreign lib {
 	Transpile to HLSL code from SPIRV code.
 
 	You must sdl.free the returned string once you are done with it.
+
+	These are the optional properties that can be used:
+
+	- `PROP_SPIRV_PSSL_COMPATIBILITY_BOOLEAN`: generates PSSL-compatible shader.
 
 	param: info a struct describing the shader to transpile.
 	returns: an sdl.malloc'd string containing HLSL code.
@@ -200,17 +212,17 @@ foreign lib {
 
 	param: device the SDL GPU device.
 	param: info a struct describing the shader to transpile.
-	param: metadata a struct describing shader metadata. Can be obtained from ReflectGraphicsSPIRV().
+	param: resource_info a struct describing resource info of the shader. Can be obtained from ReflectGraphicsSPIRV().
 	param: props a properties object filled in with extra shader metadata.
 	returns: a compiled sdl.GPUShader.
 
 	threadsafety: It is safe to call this function from any thread.
 	*/
 	CompileGraphicsShaderFromSPIRV :: proc (
-		        device:   ^sdl.GPUDevice,
-		#by_ptr info:     SPIRV_Info,
-		#by_ptr metadata: GraphicsShaderMetadata,
-		        props:    sdl.PropertiesID,
+		        device:        ^sdl.GPUDevice,
+		#by_ptr info:          SPIRV_Info,
+		#by_ptr resource_info: GraphicsShaderResourceInfo,
+		        props:         sdl.PropertiesID,
 	) -> ^sdl.GPUShader ---
 
 	/*
@@ -277,6 +289,12 @@ foreign lib {
 
 	You must sdl.free the returned buffer once you are done with it.
 
+	These are the optional properties that can be used:
+
+	- `PROP_SHADER_DEBUG_ENABLE_BOOLEAN`: allows debug info to be emitted when relevant. Should only be used with debugging tools like Renderdoc.
+	- `PROP_SHADER_DEBUG_ENABLE_BOOLEAN`: a UTF-8 name to be used with the shader. Relevant for use with debugging tools like Renderdoc.
+	- `PROP_SHADER_CULL_UNUSED_BINDINGS_BOOLEAN`: When true, indicates that the compiler should not cull unused shader resources. This behavior is disabled by default.
+
 	param: info a struct describing the shader to transpile.
 	param: size filled in with the bytecode buffer size.
 	returns: an sdl.malloc'd buffer containing DXBC bytecode.
@@ -293,6 +311,12 @@ foreign lib {
 
 	You must sdl.free the returned buffer once you are done with it.
 
+	These are the optional properties that can be used:
+
+	- `PROP_SHADER_DEBUG_ENABLE_BOOLEAN`: allows debug info to be emitted when relevant. Should only be used with debugging tools like Renderdoc.
+	- `PROP_SHADER_DEBUG_NAME_STRING`: a UTF-8 name to be used with the shader. Relevant for use with debugging tools like Renderdoc.
+	- `PROP_SHADER_CULL_UNUSED_BINDINGS_BOOLEAN`: when true, indicates that the compiler should not cull unused shader resources. This behavior is disabled by default.
+
 	param: info a struct describing the shader to transpile.
 	param: size filled in with the bytecode buffer size.
 	returns: an sdl.malloc'd buffer containing DXIL bytecode.
@@ -308,6 +332,12 @@ foreign lib {
 	Compile to SPIRV bytecode from HLSL code.
 
 	You must sdl.free the returned buffer once you are done with it.
+
+	These are the optional properties that can be used:
+
+	- `PROP_SHADER_DEBUG_ENABLE_BOOLEAN`: allows debug info to be emitted when relevant. Should only be used with debugging tools like Renderdoc.
+	- `PROP_SHADER_DEBUG_NAME_STRING`: a UTF-8 name to be used with the shader. Relevant for use with debugging tools like Renderdoc.
+	- `PROP_SHADER_CULL_UNUSED_BINDINGS_BOOLEAN`: when true, indicates that the compiler should not cull unused shader resources. This behavior is disabled by default.
 
 	param: info a struct describing the shader to transpile.
 	param: size filled in with the bytecode buffer size.
