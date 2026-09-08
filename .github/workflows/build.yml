@@ -72,5 +72,5 @@ jobs:
         if: runner.os != 'Windows'
         run: ./build.sh
 
-      - name: Check
-        run: odin check . -no-entry-point
+      - name: Run example
+        run: odin run example
