@@ -2,7 +2,7 @@
 setlocal EnableExtensions
 
 set "ROOT_DIR=%~dp0"
-set "ENV_FILE=%ROOT_DIR%.env"
+set "ENV_FILE=%ROOT_DIR%build.env"
 
 if not exist "%ENV_FILE%" (
 	echo ERROR: %ENV_FILE% does not exist.
