@@ -31,6 +31,15 @@ jobs:
           token: ${{ github.token }}
           release: latest
 
+      - name: Set up SDL3
+        id: sdl
+        uses: libsdl-org/setup-sdl@main
+        with:
+          version: 3-latest
+          build-type: Release
+          install-linux-dependencies: true
+          add-to-environment: true
+
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         run: |
