@@ -17,7 +17,7 @@ main :: proc () {
 
 init :: proc () -> (ok: bool) {
 
-	ok = sdl.Init({.VIDEO})
+	ok = sdl.Init({})
 	fmt.assertf(ok, "unable to initialize sdl, error: %s", sdl.GetError())
 
 	ok = shadercross.Init()
