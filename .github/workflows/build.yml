@@ -80,8 +80,10 @@ jobs:
         if: runner.os == 'macOS'
         run: odin run example -extra-linker-flags:"-L$SDL3_ROOT/lib -L$GITHUB_WORKSPACE/lib -rpath @loader_path/lib"
 
+      - name: Build example (Windows)
+        if: runner.os == 'Windows'
+        run: call example.bat
+
       - name: Run example (Windows)
         if: runner.os == 'Windows'
-        env:
-          LIBRARY_PATH: ${{ env.LIBRARY_PATH }};${{ env.SDL3_ROOT }}\lib
-        run: odin run example -out:lib/example.exe
+        run: ./build/example.exe
