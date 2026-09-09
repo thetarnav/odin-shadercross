@@ -65,8 +65,7 @@ jobs:
 
       - name: Build SDL_shadercross (Windows)
         if: runner.os == 'Windows'
-        shell: cmd
-        run: call build.bat
+        run: .\build.bat
 
       - name: Build SDL_shadercross (Unix)
         if: runner.os != 'Windows'
@@ -82,7 +81,7 @@ jobs:
 
       - name: Build example (Windows)
         if: runner.os == 'Windows'
-        run: call example.bat
+        run: .\example.bat
 
       - name: Run example (Windows)
         if: runner.os == 'Windows'
