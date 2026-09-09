@@ -71,17 +71,17 @@ jobs:
         if: runner.os != 'Windows'
         run: ./build.sh
 
-      - name: Run example (Linux)
-        if: runner.os == 'Linux'
-        run: odin run example -extra-linker-flags:"-L$SDL3_ROOT/lib -L$GITHUB_WORKSPACE/lib -Wl,-rpath,\$ORIGIN/lib"
-
-      - name: Run example (macOS)
-        if: runner.os == 'macOS'
-        run: odin run example -extra-linker-flags:"-L$SDL3_ROOT/lib -L$GITHUB_WORKSPACE/lib -rpath @loader_path/lib"
+      - name: Build example (Unix)
+        if: runner.os != 'Windows'
+        run: ./example.sh
 
       - name: Build example (Windows)
         if: runner.os == 'Windows'
         run: .\example.bat
+
+      - name: Run example (Unix)
+        if: runner.os != 'Windows'
+        run: ./build/example
 
       - name: Run example (Windows)
         if: runner.os == 'Windows'
