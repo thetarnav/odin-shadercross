@@ -35,10 +35,6 @@ when USE_SYSTEM {
 	else                          {LIB_PATH :: "lib/libSDL3_shadercross.so"}
 }
 
-when !#exists(LIB_PATH) {
-	#panic("Could not find the compiled SDL_shadercross libraries at \"" + LIB_PATH + "\", they can be compiled by running `" + #directory + ("build.bat`" when ODIN_OS == .Windows else "bulid.sh`"))
-}
-
 @(export) foreign import lib {LIB_PATH}
 
 MAJOR_VERSION :: 3
