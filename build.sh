@@ -102,27 +102,36 @@ else
 		"$CLONE_DIR"
 fi
 
+run_cmd() {
+	local cmd=("$@")
+
+	printf '%q ' "${cmd[@]}"
+	printf '\n'
+
+	"${cmd[@]}"
+}
+
 echo "Configuring SDL_shadercross..."
 
-cmake \
+run_cmd cmake \
 	-S "$CLONE_DIR" \
 	-B "$BUILD_DIR" \
 	-G Ninja \
 	-DCMAKE_BUILD_TYPE=Release \
 	"-DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX" \
-	-DCMAKE_INSTALL_RPATH='$ORIGIN' \
-	-DCMAKE_BUILD_RPATH='$ORIGIN' \
+	'-DCMAKE_INSTALL_RPATH=$ORIGIN' \
+	'-DCMAKE_BUILD_RPATH=$ORIGIN' \
 	$SHADERCROSS_FLAGS
 
 echo "Building SDL_shadercross..."
 
-cmake \
+run_cmd cmake \
 	--build "$BUILD_DIR" \
 	--config Release
 
 echo "Installing SDL_shadercross..."
 
-cmake \
+run_cmd cmake \
 	--install "$BUILD_DIR" \
 	--config Release
 
