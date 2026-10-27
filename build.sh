@@ -111,12 +111,18 @@ run_cmd() {
 	"${cmd[@]}"
 }
 
-echo "Configuring SDL_shadercross..."
+if command -v ninja >/dev/null 2>&1; then
+	CMAKE_GENERATOR="Ninja"
+else
+	CMAKE_GENERATOR="Unix Makefiles"
+fi
+
+echo "Configuring SDL_shadercross with $CMAKE_GENERATOR..."
 
 run_cmd cmake \
 	-S "$CLONE_DIR" \
 	-B "$BUILD_DIR" \
-	-G Ninja \
+	-G "$CMAKE_GENERATOR" \
 	-DCMAKE_BUILD_TYPE=Release \
 	"-DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX" \
 	'-DCMAKE_INSTALL_RPATH=$ORIGIN' \
